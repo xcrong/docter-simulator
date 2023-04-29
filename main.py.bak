@@ -231,11 +231,6 @@ async def main(page: ft.Page):
         settings_dlg_modal.open = True
         await page.update_async()
 
-    async def new_message_textfield_on_blur(e):
-        if page.height > page.width:
-            page.appbar.visible = True
-            await page.update_async()
-
     async def activate_new_message_textfiled(e):
         if page.height > page.width:
             """
@@ -257,8 +252,7 @@ async def main(page: ft.Page):
                 show_ro_hidden_nav_rail_button.icon = ft.icons.KEYBOARD_ARROW_RIGHT
                 await page.update_async()
 
-            page.appbar.visible = False
-            await page.update_async()
+
 
     async def store_and_load_nav_rail_visible_status():
         if await page.client_storage.contains_key_async("nav_rail_visible_status"):
@@ -480,27 +474,19 @@ async def main(page: ft.Page):
     else:
         await page.client_storage.set_async("theme_mode", "light")
 
-    page.appbar = ft.AppBar(
-        title=ft.Row(
-        [
-            ft.Icon(ft.icons.LOCAL_HOSPITAL_OUTLINED),
-            ft.Text("Doctor Simulator")
-        ]
-        ),
-        actions=[
-            ft.IconButton(ft.icons.LIGHTBULB, on_click=change_theme,tooltip="点击改变主题"),
-            ft.IconButton(ft.icons.DELETE, on_click=clear_record_click,tooltip="点击清除聊天记录"),
-        ],
-        toolbar_height=40,
-    )
-
     # AlertDialog for Setting
     settings_dlg_modal = ft.AlertDialog(
         modal=True,
         title=ft.Text("设置"),
         content=ft.Column(
             [
-                ft.Text("免责声明\n本站病人纯属虚构，\n与现实中的人物无任何联系，\n请在使用过程中遵守法律法规。", color="red"),
+                ft.Text("本站病人纯属虚构，\n与现实中的人物无任何联系，\n请在使用过程中遵守法律法规", color="red"),
+                ft.ElevatedButton(text="Change Theme", on_click=change_theme),
+                # ft.ElevatedButton(
+                #     text="清除所有信息",
+                #     tooltip="包括本地存储的聊天记录、主题状态、导航栏状态等",
+                #     on_click=lambda _: page.client_storage.clear(),
+                # ),
             ],
             alignment="center",
         ),
@@ -555,7 +541,6 @@ async def main(page: ft.Page):
         expand=True,
         on_submit=send_message_click,
         on_focus=activate_new_message_textfiled,
-        on_blur=new_message_textfield_on_blur,
     )
 
     clear_record_btn = ft.IconButton(
@@ -596,6 +581,7 @@ async def main(page: ft.Page):
                         ft.Row(
                             [
                                 show_ro_hidden_nav_rail_button,
+                                clear_record_btn,
                                 new_message,
                                 send_message_btn,
                             ]
@@ -620,11 +606,12 @@ async def main(page: ft.Page):
     if page.width > page.height:
         nav_rail.visible = True
         await page.update_async()
-
+    
     # 通常是为了移动端
     if page.width < page.height:
-        new_message.hint_style = ft.TextStyle(size=14)
+        new_message.hint_style = ft.TextStyle(size=12)
         await page.update_async()
+
 
     # ****************** 下面部分，尽量集中和 page.client_storage 相关的配置
 
@@ -671,5 +658,4 @@ async def main(page: ft.Page):
     await store_and_load_nav_rail_visible_status()
 
 
-ft.app(port=8551, target=main, view=ft.WEB_BROWSER, host="172.16.201.221")
-# ft.app(target=main)
+ft.app(target=main, view=ft.WEB_BROWSER, host="0.0.0.0", port=8550, assets_dir="assets")

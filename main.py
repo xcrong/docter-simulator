@@ -26,6 +26,7 @@
 
 import os
 import time
+import asyncio
 import flet as ft
 import openai
 import webbrowser
@@ -35,10 +36,10 @@ from info import notification, home_message
 
 import logging
 
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logging.getLogger("flet").setLevel(logging.WARN)
+# logging.basicConfig(
+#     level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+# )
+# logging.getLogger("flet").setLevel(logging.WARN)
 
 
 openai.api_key = os.getenv("OHMYGPT_API_KEY")
@@ -47,6 +48,9 @@ openai.api_base = os.getenv("OHMYGPT_API_BASE_CN")
 # PAGE_WIDTH = 700
 WIDTH_PERCENT = 0.7
 PAGE_PLATFORM = ""
+
+BOT_NAME = "Patient"
+HUMAN_NAME = "Human"
 
 
 class Message:
@@ -135,7 +139,7 @@ class UserMessage(ft.Row):
 
 
 class Bot:
-    def get_respond(user_message, human_records: list, bot_records, p_index):
+    async def get_respond(user_message, human_records: list, bot_records, p_index):
         l1 = [{"role": "user", "content": x} for x in human_records]
         l2 = [{"role": "assistant", "content": x} for x in bot_records]
 
@@ -146,41 +150,45 @@ class Bot:
             + exist_message_ls
             + [{"role": "user", "content": user_message}]
         )
-        logging.debug(messages)
+        # try:
+        #     result = await openai.ChatCompletion.acreate(
+        #         model="gpt-3.5-turbo", messages=messages, stream=True, **request_para
+        #     )
+        #     for chunck in result:
+        #         if chunck["choices"][0]["finish_reason"] != None:
+        #             data = "[DONE]"
+        #         else:
+        #             try:
+        #                 data = chunck["choices"][0]["delta"]["content"]
+        #                 yield data
+        #             except:
+        #                 pass
+        # except Exception as e:
+        #     yield str(e)
         try:
-            result = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo", messages=messages, stream=True, **request_para
+            result = await openai.ChatCompletion.acreate(
+                model="gpt-3.5-turbo", messages=messages, stream=False, **request_para
             )
-            for chunck in result:
-                if chunck["choices"][0]["finish_reason"] != None:
-                    data = "[DONE]"
-                else:
-                    try:
-                        data = chunck["choices"][0]["delta"]["content"]
-                        yield data
-                        # t += data
-                    except:
-                        # print(chunck['choices'][0]['delta']['role'])
-                        pass
+            return result["choices"][0]["message"]["content"]
         except Exception as e:
-            yield str(e)
+            return str(e)
 
 
-def main(page: ft.Page):
-    def on_keyboard(e: ft.KeyboardEvent):
+async def main(page: ft.Page):
+    async def on_keyboard(e: ft.KeyboardEvent):
         if e.key == "Tab" and new_message.value == "":
             new_message.value = "您好，请问怎么称呼您？我是医生"
-            page.update()
-            new_message.focus()
+            await page.update_async()
+            await new_message.focus_async()
 
         if e.ctrl and e.key == "B":
-            show_or_hidden_nav_rail(None)
-            page.update()
+            await show_or_hidden_nav_rail(None)
+            await page.update_async()
 
         if e.ctrl and e.key == "J":
-            new_message.focus()
+            await new_message.focus_async()
 
-    def on_click_nav_rail_leading(e):
+    async def on_click_nav_rail_leading(e):
         chat.controls = [
             ft.Column(
                 [
@@ -200,72 +208,90 @@ def main(page: ft.Page):
         send_message_btn.visible = False
 
         nav_rail.selected_index = None
-        page.update()
+        await page.update_async()
 
-    def change_theme(e):
-        print()
-
-        now_theme_mode = page.client_storage.get("theme_mode")
+    async def change_theme(e):
+        now_theme_mode = await page.client_storage.get_async("theme_mode")
         if now_theme_mode == "dark":
             page.theme_mode = "light"
-            page.client_storage.set("theme_mode", "light")
+            await page.client_storage.set_async("theme_mode", "light")
 
         elif now_theme_mode == "light":
             page.theme_mode = "dark"
-            page.client_storage.set("theme_mode", "dark")
+            await page.client_storage.set_async("theme_mode", "dark")
 
-        page.update()
-        logging.debug(
-            f"_____________ set themo_mode to: {page.client_storage.get('theme_mode')}"
-        )
+        await page.update_async()
 
-    def close_dlg(e):
+    async def close_dlg(e):
         settings_dlg_modal.open = False
-        page.update()
+        await page.update_async()
 
-    def about_setting(e):
-        print("start settings")
+    async def about_setting(e):
         page.dialog = settings_dlg_modal
         settings_dlg_modal.open = True
-        page.update()
+        await page.update_async()
 
-    def add_and_remove_an_blank_message(e):
-        """
-        当对话过长时，点击输入框，可以自动将聊天记录
-        滚动到最下方
-        """
-        m = ft.Text("")
-        chat.controls.append(m)
-        chat.update()
-        time.sleep(0.01)
-        chat.controls.pop()
-        chat.update()
+    async def new_message_textfield_on_blur(e):
+        if page.height > page.width:
+            page.appbar.visible = True
+            await page.update_async()
 
-    def store_and_load_nav_rail_visible_status():
-        if page.client_storage.contains_key("nav_rail_visible_status"):
-            status = page.client_storage.get("nav_rail_visible_status")
+    async def activate_new_message_textfiled(e):
+        if page.height > page.width:
+            """
+            当对话过长时，点击输入框，可以自动将聊天记录
+            滚动到最下方
+            """
+            m = ft.Text("")
+            chat.controls.append(m)
+            await chat.update_async()
+            await asyncio.sleep(0.01)
+            chat.controls.pop()
+            await chat.update_async()
+
+            # 因为只能设置一个事件，
+            # 当输入设备的 高 大于 宽，激活输入框的时候，关闭测栏
+            # 此功能智能放于此处
+            if nav_rail:
+                nav_rail.visible = False
+                show_ro_hidden_nav_rail_button.icon = ft.icons.KEYBOARD_ARROW_RIGHT
+                await page.update_async()
+
+            page.appbar.visible = False
+            await page.update_async()
+
+    async def store_and_load_nav_rail_visible_status():
+        if await page.client_storage.contains_key_async("nav_rail_visible_status"):
+            status = await page.client_storage.get_async("nav_rail_visible_status")
             nav_rail.visible = status
             if status:
                 show_ro_hidden_nav_rail_button.icon = ft.icons.KEYBOARD_ARROW_LEFT
             else:
                 show_ro_hidden_nav_rail_button.icon = ft.icons.KEYBOARD_ARROW_RIGHT
         else:
-            page.client_storage.set("nav_rail_visible_status", nav_rail.visible)
-        page.update()
+            await page.client_storage.set_async(
+                "nav_rail_visible_status", nav_rail.visible
+            )
+        await page.update_async()
 
-    def show_or_hidden_nav_rail(e):
+    async def show_or_hidden_nav_rail(e):
         if nav_rail.visible:
             nav_rail.visible = False
             show_ro_hidden_nav_rail_button.icon = ft.icons.KEYBOARD_ARROW_RIGHT
-            page.client_storage.set("nav_rail_visible_status", nav_rail.visible)
+            await page.client_storage.set_async(
+                "nav_rail_visible_status", nav_rail.visible
+            )
         else:
             nav_rail.visible = True
             show_ro_hidden_nav_rail_button.icon = ft.icons.KEYBOARD_ARROW_LEFT
-            page.client_storage.set("nav_rail_visible_status", nav_rail.visible)
-        page.update()
+            await page.client_storage.set_async(
+                "nav_rail_visible_status", nav_rail.visible
+            )
+        await page.update_async()
 
-    def add_notification():
-        if len(page.client_storage.get("p")[nav_rail.selected_index]) == 0:
+    async def add_notification():
+        records = await page.client_storage.get_async("p")
+        if len(records[nav_rail.selected_index]) == 0:
             chat.controls.append(
                 ft.Column(
                     [
@@ -280,10 +306,13 @@ def main(page: ft.Page):
                     width=int(PAGE_WIDTH * WIDTH_PERCENT),
                 )
             )
-            chat.update()
+            await chat.update_async()
 
-    def get_last_five_turn_messages():
-        records = page.client_storage.get("p")[nav_rail.selected_index]
+    async def get_last_five_turn_messages():
+        # 最初设计为五轮对话，后来发现不够，就加到10轮
+        # 函数名暂且不改了
+        records = await page.client_storage.get_async("p")
+        records = records[nav_rail.selected_index]
         if len(records) > 20:
             records = records[-20:]
             human_ls = [x[1] for x in records if x[0] == "Human"]
@@ -294,7 +323,7 @@ def main(page: ft.Page):
             bot_ls = [x[1] for x in records if x[0] == "Patient"]
             return (human_ls, bot_ls)
 
-    def steam_build_bot_message(respond, user_message):
+    async def steam_build_bot_message(respond, user_message):
         def get_initials(user_name: str):
             return user_name[:1].capitalize()
 
@@ -315,9 +344,9 @@ def main(page: ft.Page):
         bot_message_view = ft.Row(
             controls=[
                 ft.CircleAvatar(
-                    content=ft.Text(get_initials("Patient")),
+                    content=ft.Text(get_initials(BOT_NAME)),
                     color=ft.colors.WHITE,
-                    bgcolor=get_avatar_color("Patient"),
+                    bgcolor=get_avatar_color(BOT_NAME),
                 ),
                 ft.Column(
                     [
@@ -334,95 +363,99 @@ def main(page: ft.Page):
             alignment="start",
         )
         chat.controls.append(bot_message_view)
-        chat.update()
+        await chat.update_async()
 
         for x in respond:
             stream_message.value += x
-            stream_message.update()
-            # 如果使用OhmyGPT的话，必须使用暂停一下，才能有 伪流式输出
-            time.sleep(0.03)
+            await stream_message.update_async()
+            # 如果使用OhmyGPT的话，必须使用暂停一下，才能有 伪流式 输出
+            await asyncio.sleep(0.04)
 
-        add_and_remove_an_blank_message(None)  # to scroll to the bottom
+        await activate_new_message_textfiled(None)  # to scroll to the bottom
 
         # 需要让 Human 在 bot之上， 以防消息的顺序出现错乱
-        # 之所以放在此处，是因为：为了流式输出消息，必须在流式输出完成后才能更新 bot 的记录
-        update_local_record("Human", user_message, "user_message")
-        update_local_record("Patient", stream_message.value, "bot_message")
+        # 之所以放在此处，是因为：为了流式输出消息，必须在流式输出完成后才能更新 bot 聊天的记录
+        await update_local_record("Human", user_message, "user_message")
+        await update_local_record("Patient", stream_message.value, "bot_message")
 
-    def up_width_info(e):
+    async def up_width_info(e):
         global PAGE_WIDTH
         PAGE_WIDTH = page.width
-        if not page.client_storage.contains_key("page_width"):
-            page.client_storage.set("page_width", page.width)
-        logging.debug(f"Now Page Width: {page.width}")
-        page.update()
+        if not await page.client_storage.contains_key_async("page_width"):
+            await page.client_storage.set_async("page_width", page.width)
 
-    def switch_to_px(e):
+        await page.update_async()
+
+    async def switch_to_px(e):
         new_message.visible = True
         clear_record_btn.visible = True
         send_message_btn.visible = True
 
-        chat.controls.clear()
-        for record in page.client_storage.get("p")[nav_rail.selected_index]:
-            on_message(Message(*record))
+        # await chat.clean_async()
+        chat.controls = []
+        await page.update_async()
 
-        add_notification()
-        page.update()
+        records = await page.client_storage.get_async("p")
+        for record in records[nav_rail.selected_index]:
+            await on_message(Message(*record))
 
-    def clear_record_click(e):
-        record = page.client_storage.get("p")
-        record[nav_rail.selected_index] = []
-        page.client_storage.set("p", record)
-        chat.controls.clear()
-        chat.update()
-        # logging.debug(
-        #     f"清除了索引为{nav_rail.selected_index}的记录,现在是：{page.client_storage.get('p')}"
-        # )
-        add_notification()
+        await add_notification()
+        await chat.update_async()
 
-    def get_respond(user_message):
-        bot_respond = Bot.get_respond(
-            user_message, *get_last_five_turn_messages(), nav_rail.selected_index
+    async def clear_record_click(e):
+        records = await page.client_storage.get_async("p")
+        records[nav_rail.selected_index] = []
+        await page.client_storage.set_async("p", records)
+        await chat.clean_async()
+        await chat.update_async()
+        await add_notification()
+
+    async def get_respond(user_message):
+        recent_message = await get_last_five_turn_messages()
+        bot_respond = await Bot.get_respond(
+            user_message, *recent_message, nav_rail.selected_index
         )
         return bot_respond
 
-    def update_local_record(user_type, user_message, message_type):
-        record: list = page.client_storage.get("p")
-        record[nav_rail.selected_index].append((user_type, user_message, message_type))
-        logging.debug(
-            f"Add {user_type} {user_message} {message_type} to index {nav_rail.selected_index}"
-        )
-        logging.debug(f"现在是：{page.client_storage.get('p')}")
-        page.client_storage.set("p", record)
+    # async def get_respond(user_message):
+    #     recent_message = await get_last_five_turn_messages()
+    #     bot_respond = None
+    #     async for respond in Bot.get_respond(
+    #         user_message, *recent_message, nav_rail.selected_index
+    #     ):
+    #         bot_respond = respond
+    #     return bot_respond
 
-    def send_message_click(e):
+    async def update_local_record(user_type, user_message, message_type):
+        record: list = await page.client_storage.get_async("p")
+        record[nav_rail.selected_index].append((user_type, user_message, message_type))
+        await page.client_storage.set_async("p", record)
+
+    async def send_message_click(e):
         if new_message.value != "":
             # 在响应前清除，防止重复输入
             user_message = new_message.value
             new_message.value = ""
-            new_message.focus()
+            await new_message.focus_async()
 
             # 如果是当前会话中的第一条消息，就删除公告
             if len(chat.controls) == 1:
-                chat.controls = []
-                chat.update()
+                await chat.clean_async()
+                await chat.update_async()
 
-            on_message(
+            await on_message(
                 Message(
-                    page.session.get("user_name"),
+                    HUMAN_NAME,
                     user_message,
                     message_type="user_message",
                 )
             )
 
-            bot_respend = get_respond(user_message)
-            steam_build_bot_message(bot_respend, user_message)
-            page.update()
+            bot_respend = await get_respond(user_message)
+            await steam_build_bot_message(bot_respend, user_message)
+            await page.update_async()
 
-    def on_message(message: Message):
-        logging.debug(
-            f"__________________________ {page.platform}: {page.width} ___________________________"
-        )
+    async def on_message(message: Message):
         if message.message_type == "user_message":
             m = UserMessage(message, page.width)
         elif message.message_type == "bot_message":
@@ -430,7 +463,7 @@ def main(page: ft.Page):
         elif message.message_type == "login_message":
             m = ft.Text(message.text, italic=True, color=ft.colors.BLACK45, size=12)
         chat.controls.append(m)
-        page.update()
+        await page.update_async()
 
     #### —————————————————— 页面相关属性设置 ———————————————————————— ###
     page.title = "Doctor Emulator"
@@ -442,16 +475,23 @@ def main(page: ft.Page):
     page.session.set("bot_name", "Patient")
     page.theme = ft.Theme(use_material3=True)
 
-    if page.client_storage.contains_key("theme_mode"):
-        page.theme_mode = page.client_storage.get("theme_mode")
-        logging.debug(
-            f"________________在LocalStorage中发现theme_mode, 已设置为{page.client_storage.get('theme_mode')}"
-        )
+    if await page.client_storage.contains_key_async("theme_mode"):
+        page.theme_mode = await page.client_storage.get_async("theme_mode")
     else:
-        page.client_storage.set("theme_mode", "light")
-        logging.debug(
-            f"________________在LocalStorage中未发现theme_mode, 已设置为{page.client_storage.get('theme_mode')}"
-        )
+        await page.client_storage.set_async("theme_mode", "light")
+
+    page.appbar = ft.AppBar(
+        title=ft.Row(
+            [ft.Icon(ft.icons.LOCAL_HOSPITAL_OUTLINED), ft.Text("Doctor Simulator")]
+        ),
+        actions=[
+            ft.IconButton(ft.icons.LIGHTBULB, on_click=change_theme, tooltip="点击改变主题"),
+            ft.IconButton(
+                ft.icons.DELETE, on_click=clear_record_click, tooltip="点击清除聊天记录"
+            ),
+        ],
+        toolbar_height=40,
+    )
 
     # AlertDialog for Setting
     settings_dlg_modal = ft.AlertDialog(
@@ -459,13 +499,7 @@ def main(page: ft.Page):
         title=ft.Text("设置"),
         content=ft.Column(
             [
-                ft.Text("本站病人纯属虚构，\n与现实中的人物无任何联系，\n请在使用过程中遵守法律法规", color="red"),
-                ft.ElevatedButton(text="Change Theme", on_click=change_theme),
-                # ft.ElevatedButton(
-                #     text="清除所有信息",
-                #     tooltip="包括本地存储的聊天记录、主题状态、导航栏状态等",
-                #     on_click=lambda _: page.client_storage.clear(),
-                # ),
+                ft.Text("免责声明\n本站病人纯属虚构，\n与现实中的人物无任何联系，\n请在使用过程中遵守法律法规。", color="red"),
             ],
             alignment="center",
         ),
@@ -512,14 +546,15 @@ def main(page: ft.Page):
     # A new message entry form
     new_message = ft.TextField(
         hint_text="您好，请问怎么称呼您？我是医生XX",
-        autofocus=True,
+        # autofocus=True,
         shift_enter=True,
         min_lines=1,
         max_lines=5,
         filled=True,
         expand=True,
         on_submit=send_message_click,
-        on_focus=add_and_remove_an_blank_message,
+        on_focus=activate_new_message_textfiled,
+        on_blur=new_message_textfield_on_blur,
     )
 
     clear_record_btn = ft.IconButton(
@@ -543,7 +578,7 @@ def main(page: ft.Page):
 
     # Add everything to the page
 
-    page.add(
+    await page.add_async(
         ft.Row(
             [
                 nav_rail,
@@ -560,7 +595,6 @@ def main(page: ft.Page):
                         ft.Row(
                             [
                                 show_ro_hidden_nav_rail_button,
-                                clear_record_btn,
                                 new_message,
                                 send_message_btn,
                             ]
@@ -572,55 +606,68 @@ def main(page: ft.Page):
             expand=True,
         ),
     )
-    page.update()
+    await page.update_async()
+
+    # 测试时清除 localStorage
+    # await page.client_storage.clear_async()
 
     # 当完成页面布局是，立马更新页面宽度
     # 以防生成的消息为预设的状态
-    up_width_info(None)
+    await up_width_info(None)
 
     # 如果页面的宽大于高，则将导航栏设置为默认显示
     if page.width > page.height:
         nav_rail.visible = True
-        page.update()
+        await page.update_async()
+
+    # 通常是为了移动端
+    if page.width < page.height:
+        new_message.hint_style = ft.TextStyle(size=14)
+        await page.update_async()
 
     # ****************** 下面部分，尽量集中和 page.client_storage 相关的配置
 
-    if page.client_storage.contains_key("tip_input"):
+    if await page.client_storage.contains_key_async("tip_input"):
         pass
     else:
         new_message.value = "您好，请问怎么称呼您？我是医生XX"
-        page.client_storage.set("tip_input", False)
+        await page.client_storage.set_async("tip_input", False)
 
     #### ----------  如果读取不到已经存在聊天的记录，就初始化记录列表，以供存储和读取    ----------- #####
-    if page.client_storage.contains_key("p"):
-        for record in page.client_storage.get("p")[nav_rail.selected_index]:
-            on_message(Message(*record))
+    if await page.client_storage.contains_key_async("p"):
+        records = await page.client_storage.get_async("p")
+        for record in records[nav_rail.selected_index]:
+            try:
+                await on_message(Message(*record))
+            except:
+                await clear_record_click()
     else:
-        page.client_storage.set("p", [[] for _ in range(len(nav_rail.destinations))])
+        await page.client_storage.set_async(
+            "p", [[] for _ in range(len(nav_rail.destinations))]
+        )
 
-    logging.debug(f"页面开始加载时：{page.client_storage.get('p')}")
     # 如果动态添加预设prompt之bot数量，可能会导致聊天记录丢失
     # 因为原有聊天记录的列表长度与增加后不相符，所以需要解决
     # 这里扩展聊天记录列表的长度，应该可以解决
-    if len(page.client_storage.get("p")) < len(nav_rail.destinations):
-        p = page.client_storage.get("p")
+    if len(await page.client_storage.get_async("p")) < len(nav_rail.destinations):
+        p = await page.client_storage.get_async("p")
         n = len(nav_rail.destinations) - len(p)
         p += [[] for _ in range(n)]
-        page.client_storage.set("p", p)
+        await page.client_storage.set_async("p", p)
 
     ### ----------- some functions will be execute in after the UI was built ------------- #####
     # add Notification
-    add_notification()
+    await add_notification()
 
     # 为了防止误加载通知，智能放在加载通知后面
     # 如果是第一次访问，则展示首页信息
-    if not page.client_storage.contains_key("first_visitor"):
-        page.client_storage.set("first_visitor", True)
-    if page.client_storage.get("first_visitor"):
-        on_click_nav_rail_leading(None)
-        page.client_storage.set("first_visitor", False)
+    if not await page.client_storage.contains_key_async("first_visitor"):
+        await page.client_storage.set_async("first_visitor", True)
+    if await page.client_storage.get_async("first_visitor"):
+        await on_click_nav_rail_leading(None)
+        await page.client_storage.set_async("first_visitor", False)
 
-    store_and_load_nav_rail_visible_status()
+    await store_and_load_nav_rail_visible_status()
 
 
 ft.app(target=main, view=ft.WEB_BROWSER, host="0.0.0.0", port=8550, assets_dir="assets")
