@@ -50,3 +50,7 @@ python main.py
 
 - 白云
 - ChatGPT
+
+
+## License
+[MIT](/LICENSE)
