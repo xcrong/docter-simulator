@@ -2,4 +2,6 @@ __pycache__
 .venv
 .env
 dist
-# temp.py
+temp.py
+test.py
+main.py.bak
