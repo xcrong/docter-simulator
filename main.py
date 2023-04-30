@@ -46,7 +46,6 @@ load_dotenv()
 openai.api_key = os.environ.get("OHMYGPT_API_KEY")
 openai.api_base = os.environ.get("OHMYGPT_API_BASE_CN", "https://api.openai.com/v1")
 
-
 # 为了让聊天消息不要超出显示范围，需要根据当前界面的宽度*0.7来设置显示区域
 WIDTH_PERCENT = 0.7
 
@@ -548,7 +547,7 @@ async def main(page: ft.Page):
             clear_record_btn_in_app_bar.visible = True
         elif page.width > page.height:
             clear_record_btn_in_bottom_bar.visible = True
-        send_message_btn.visible = True
+            send_message_btn.visible = True
 
         # await chat.clean_async()
         chat.controls = []
@@ -628,7 +627,7 @@ async def main(page: ft.Page):
         await page.update_async()
 
     #### —————————————————— 页面相关属性设置 ———————————————————————— ###
-    page.title = "Doctor Emulator"
+    page.title = "Doctor Simulator"
     page.on_resize = up_width_info
     page.on_keyboard_event = on_keyboard
 
@@ -725,7 +724,7 @@ async def main(page: ft.Page):
 
     # A new message entry form
     new_message = ft.TextField(
-        label="请问您怎么称呼？我是医生XX",
+        label="跟你的病人谈谈吧~",
         hint_text="回车发送消息",
         # autofocus=True,
         shift_enter=True,
@@ -742,6 +741,7 @@ async def main(page: ft.Page):
         icon=ft.icons.SEND_ROUNDED,
         tooltip="Send message",
         on_click=send_message_click,
+        visible=False,
     )
 
     # the button on show or hidden navigation rail
@@ -782,7 +782,6 @@ async def main(page: ft.Page):
             expand=True,
         ),
     )
-    await page.update_async()
 
     # 测试时清除 localStorage
     # await page.client_storage.clear_async()
@@ -796,6 +795,7 @@ async def main(page: ft.Page):
         nav_rail.visible = True
         clear_record_btn_in_bottom_bar.visible = True
         clear_record_btn_in_app_bar.visible = False
+        send_message_btn.visible = True
         await page.update_async()
 
     # 通常是为了移动端
@@ -803,7 +803,6 @@ async def main(page: ft.Page):
         new_message.hint_style = ft.TextStyle(size=14)
         clear_record_btn_in_bottom_bar.visible = False
         clear_record_btn_in_app_bar.visible = True
-        send_message_btn.visible = False
         await page.update_async()
 
     # ****************** 下面部分，尽量集中和 page.client_storage 相关的配置
@@ -843,12 +842,14 @@ async def main(page: ft.Page):
     # add Notification
     await add_notification()
 
-    # 为了防止误加载通知，智能放在加载通知后面
+    # 为了防止误加载通知，只能放在加载通知后面
     # 如果是第一次访问，则展示首页信息
     if not await page.client_storage.contains_key_async("first_visitor"):
         await page.client_storage.set_async("first_visitor", True)
     if await page.client_storage.get_async("first_visitor"):
         await on_click_nav_rail_leading(None)
+        nav_rail.visible = True
+        show_ro_hidden_nav_rail_button.icon = ft.icons.KEYBOARD_ARROW_LEFT
         await page.client_storage.set_async("first_visitor", False)
 
     await store_and_load_nav_rail_visible_status()
