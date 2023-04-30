@@ -37,10 +37,10 @@ from info import notification, home_message
 
 import logging
 
-# logging.basicConfig(
-#     level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
-# )
-# logging.getLogger("flet").setLevel(logging.WARN)
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logging.getLogger("flet").setLevel(logging.WARN)
 
 load_dotenv()
 openai.api_key = os.environ.get("OHMYGPT_API_KEY")
@@ -56,7 +56,7 @@ WIDTH_PERCENT = 0.7
 
 
 BOT_NAME = "Patient"
-HUMAN_NAME = "Human"
+HUMAN_NAME = "Doctor"
 
 
 class Message:
@@ -505,7 +505,6 @@ async def main(page: ft.Page):
             await asyncio.sleep(0.04)
 
         await activate_new_message_textfiled(None)  # to scroll to the bottom
-        
 
         # 把最新的聊天记录更新到localstorage
         # 需要让 Human 在 bot之上， 以防消息的顺序出现错乱
@@ -646,7 +645,6 @@ async def main(page: ft.Page):
         # 设置默认主题模式 light
         await page.client_storage.set_async("theme_mode", "light")
 
-
     #### —————————————————— 控件 Controls ------------------#####
     clear_record_btn_in_bottom_bar = ft.IconButton(
         icon=ft.icons.DELETE,
@@ -727,7 +725,8 @@ async def main(page: ft.Page):
 
     # A new message entry form
     new_message = ft.TextField(
-        hint_text="请问您怎么称呼？我是医生XX",
+        label="请问您怎么称呼？我是医生XX",
+        hint_text="回车发送消息",
         # autofocus=True,
         shift_enter=True,
         min_lines=1,
@@ -739,7 +738,7 @@ async def main(page: ft.Page):
         on_blur=new_message_textfield_on_blur,
     )
 
-    send_message_btn = ft.IconButton(
+    send_message_btn = ft.FloatingActionButton(
         icon=ft.icons.SEND_ROUNDED,
         tooltip="Send message",
         on_click=send_message_click,
@@ -770,8 +769,8 @@ async def main(page: ft.Page):
                         ),
                         ft.Row(
                             [
-                                clear_record_btn_in_bottom_bar,
                                 show_ro_hidden_nav_rail_button,
+                                clear_record_btn_in_bottom_bar,
                                 new_message,
                                 send_message_btn,
                             ]
@@ -804,6 +803,7 @@ async def main(page: ft.Page):
         new_message.hint_style = ft.TextStyle(size=14)
         clear_record_btn_in_bottom_bar.visible = False
         clear_record_btn_in_app_bar.visible = True
+        send_message_btn.visible = False
         await page.update_async()
 
     # ****************** 下面部分，尽量集中和 page.client_storage 相关的配置
@@ -854,4 +854,4 @@ async def main(page: ft.Page):
     await store_and_load_nav_rail_visible_status()
 
 
-ft.app(target=main, view=ft.WEB_BROWSER, host="0.0.0.0", port=8550, assets_dir="assets")
+ft.app(target=main, view=ft.WEB_BROWSER, host="0.0.0.0", port=8550)

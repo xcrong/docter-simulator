@@ -2,3 +2,6 @@ __pycache__
 .venv
 .env
 dist
+*.spec
+build
+test.py 
