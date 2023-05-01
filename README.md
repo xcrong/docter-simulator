@@ -63,6 +63,9 @@ source .venv/bin/activate # Linux/MacOS
 # 安装依赖
 pip install -r requirements.txt
 
+# 配置环境变量
+# 参见方法一
+
 # 启动程序
 python main.py
 
