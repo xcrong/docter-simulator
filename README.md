@@ -10,9 +10,49 @@
 此小小软件，即在下自珍之敝帚；因知其必有不自见之处，故公开于GitHub之上，以小此患。
 
 ## 二、使用
+1. 使用 `poetry`
 ```
-# clone本仓库到本地
+# 安装 poetry 参见： https://python-poetry.org/
+
+# clone 本项目到本地
+git clone https://github.com/gty20010709/docter-simulator
+
+# 进入项目文件夹
 cd doctor-simulator
+
+# 安装依赖
+poetry install
+
+# 激活环境
+poetry shell
+
+# 配置环境变量
+    # 如果使用官方API的话，只需要在系统环境变量配置
+    # OPENAI_API_KEY=sk-......
+    # 如果使用第三方API的话，还需要设置第三方的API端点
+    # 类似：https://api.xxxgtp.com/v1
+    # OPENAI_API_BASE=
+    # 如果对环境变量设置不熟悉的话，可以在根目录的 .env 文件中设置
+    # 首先把 .env.example 复制一份，并改名为 .env
+    # 使用官方API，就取消注释 OPENAI_API_KEY= 这行，并填写
+    # 使用第三方API，就再取消注释 OPENAI_API_BASE= 这行，
+    # 并填写第三方的API端点
+
+# 运行主程序
+python main.py
+
+```
+
+2. 使用 `pip`
+
+```
+# clone 本项目到本地
+git clone https://github.com/gty20010709/docter-simulator
+
+# 进入项目文件夹
+cd doctor-simulator
+
+# 创建虚拟环境
 python -m venv .venv
 
 # 激活环境
@@ -22,18 +62,6 @@ source .venv/bin/activate # Linux/MacOS
 
 # 安装依赖
 pip install -r requirements.txt
-
-# 配置环境变量
-# 如果使用官方API的话，只需要在系统环境变量配置
-# OPENAI_API_KEY=sk-......
-# 如果使用第三方API的话，还需要设置第三方的API端点
-# 类似：https://api.xxxgtp.com/v1
-# OPENAI_API_BASE=
-# 如果对环境变量设置不熟悉的话，可以在根目录的 .env 文件中设置
-# 首先把 .env.example 复制一份，并改名为 .env
-# 使用官方API，就取消注释 OPENAI_API_KEY= 这行，并填写
-# 使用第三方API，就再取消注释 OPENAI_API_BASE= 这行，
-# 并填写第三方的API端点
 
 # 启动程序
 python main.py
