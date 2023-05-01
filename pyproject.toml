@@ -8,11 +8,14 @@ readme = "README.md"
 packages = [{include = "doctor_simulator"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.12"
 flet = "^0.6.2"
 python-dotenv = "^1.0.0"
 openai = "^0.27.5"
 
+
+[tool.poetry.group.dev.dependencies]
+pyinstaller = "^5.10.1"
 
 [build-system]
 requires = ["poetry-core"]
