@@ -1,216 +1,31 @@
-aiofiles==22.1.0
-aiosqlite==0.19.0
-anyio==3.6.2
-appdirs==1.4.4
-APScheduler==3.10.1
-apt-xapian-index==0.49
-argon2-cffi==21.3.0
-argon2-cffi-bindings==21.2.0
-arrow==1.2.3
-astroid==2.15.0
-attrs==21.2.0
-autopep8==1.6.0
-Babel==2.12.1
-backcall==0.2.0
-beautifulsoup4==4.10.0
-beniget==0.4.1
-bleach==6.0.0
-blinker==1.4
-Brotli==1.0.9
-certifi==2020.6.20
-cffi==1.15.1
-chardet==4.0.0
-charset-normalizer==3.0.1
-click==8.0.3
-colorama==0.4.4
-comm==0.1.2
-command-not-found==0.3
-commonmark==0.9.1
-cryptography==3.4.8
-cupshelpers==1.0
-cycler==0.11.0
-dbus-python==1.2.18
-debugpy==1.6.6
-decorator==4.4.2
-defusedxml==0.7.1
-dill==0.3.6
-distro==1.7.0
-distro-info===1.1build1
-docstring-to-markdown==0.12
-fastjsonschema==2.16.2
-flake8==6.0.0
-fonttools==4.29.1
-fqdn==1.5.1
-fs==2.4.12
-fuse-python==1.0.2
-gast==0.5.2
-gpg===1.16.0-unknown
-greenlet==2.0.1
-h11==0.14.0
-html5lib==1.1
-httpcore==0.16.3
-httplib2==0.20.2
-httpx==0.23.3
-idna==3.4
-importlib-metadata==4.6.4
-ipykernel==6.21.1
-ipython==7.31.1
-ipython-genutils==0.2.0
-ipywidgets==8.0.4
-isoduration==20.11.0
-isort==5.12.0
-jedi==0.18.0
-jeepney==0.7.1
-jieba==0.42.1
-Jinja2==3.1.2
-json5==0.9.11
-jsonpointer==2.3
-jsonschema==4.17.3
-jupyter==1.0.0
-jupyter-console==6.5.0
-jupyter-events==0.6.3
-jupyter-ydoc==0.2.4
-jupyter_client==8.0.2
-jupyter_core==5.2.0
-jupyter_server==2.2.1
-jupyter_server_fileid==0.9.0
-jupyter_server_terminals==0.4.4
-jupyter_server_ydoc==0.8.0
-jupyterlab==3.6.3
-jupyterlab-pygments==0.2.2
-jupyterlab-widgets==3.0.5
-jupyterlab_server==2.22.1
-keyring==23.5.0
-kiwisolver==1.3.2
-language-selector==0.1
-launchpadlib==1.10.16
-lazr.restfulclient==0.14.4
-lazr.uri==1.0.6
-lazy-object-proxy==1.9.0
-lxml==4.8.0
-lz4==3.1.3+dfsg
-MarkupSafe==2.1.2
-matplotlib==3.5.1
-matplotlib-inline==0.1.3
-mccabe==0.7.0
-meld==3.20.4
-mistune==2.0.5
-more-itertools==8.10.0
-mpmath==0.0.0
-mutagen==1.45.1
-nbclassic==0.5.1
-nbclient==0.7.2
-nbconvert==7.2.9
-nbformat==5.7.3
-nest-asyncio==1.5.6
-netifaces==0.11.0
-notebook==6.5.2
-notebook_shim==0.2.2
-numpy==1.21.5
-oauthlib==3.2.0
-olefile==0.46
-OpenCC==1.1.6
-packaging==23.0
-pandocfilters==1.5.0
-parso==0.8.1
-pexpect==4.8.0
-pickleshare==0.7.5
-Pillow==9.0.1
-platformdirs==3.0.0
-playwright==1.32.1
-pluggy==1.0.0
-ply==3.11
-prometheus-client==0.16.0
-prompt-toolkit==3.0.36
-psutil==5.9.4
-ptyprocess==0.7.0
-pycairo==1.20.1
-pycodestyle==2.10.0
-pycparser==2.21
-pycryptodomex==3.11.0
-pycups==2.0.1
-pydocstyle==6.2.3
-pyee==9.0.4
-pyflakes==3.0.1
-Pygments==2.11.2
-PyGObject==3.42.1
-PyJWT==2.3.0
-pylibacl==0.6.0
-pylint==2.17.0
-pyparsing==2.4.7
-PyQt5==5.15.6
-PyQt5-sip==12.9.1
-pyrsistent==0.19.3
-python-apt==2.4.0+ubuntu1
-python-dateutil==2.8.2
-python-debian===0.1.43ubuntu1
-python-json-logger==2.0.4
-python-lsp-jsonrpc==1.0.0
-python-lsp-server==1.7.1
-python-magic==0.4.27
-pythran==0.10.0
-pytoolconfig==1.2.5
-pytube==12.1.2
-pytz==2022.1
-pytz-deprecation-shim==0.1.0.post0
-pyxattr==0.7.2
-pyxdg==0.27
-PyYAML==5.4.1
-pyzmq==25.0.0
-qtconsole==5.4.0
-QtPy==2.3.0
-reportlab==3.6.8
-requests==2.28.2
-rfc3339-validator==0.1.4
-rfc3986==1.5.0
-rfc3986-validator==0.1.1
-rich==12.6.0
-rope==1.7.0
-scipy==1.8.0
-SecretStorage==3.3.1
-Send2Trash==1.8.0
-setproctitle==1.2.2
-six==1.16.0
-sniffio==1.3.0
-snowballstemmer==2.2.0
-soupsieve==2.3.1
-ssh-import-id==5.11
-sympy==1.9
-systemd-python==234
-terminado==0.17.1
-tinycss2==1.2.1
-toml==0.10.2
-tomli==2.0.1
-tomlkit==0.11.6
-tornado==6.2
-traitlets==5.9.0
-typing_extensions==4.5.0
-tzdata==2023.3
-tzlocal==4.3
-ubuntu-advantage-tools==8001
-ubuntu-drivers-common==0.0.0
-ufoLib2==0.13.1
-ufw==0.36.1
-ujson==5.7.0
-unattended-upgrades==0.1
-unicodedata2==14.0.0
-uri-template==1.2.0
-urllib3==1.26.14
-usb-creator==0.3.7
-vboxapi==1.0
-wadllib==1.3.6
-wcwidth==0.2.5
-webcolors==1.12
-webencodings==0.5.1
-websocket-client==1.5.1
-websockets==9.1
-whatthepatch==1.0.4
-widgetsnbextension==4.0.5
-wrapt==1.15.0
-xdg==5
-xkit==0.0.0
-y-py==0.5.9
-yapf==0.32.0
-ypy-websocket==0.8.2
-yt-dlp==2022.4.8
-zipp==1.0.0
+aiohttp==3.8.4 ; python_version >= "3.10" and python_version < "4.0"
+aiosignal==1.3.1 ; python_version >= "3.10" and python_version < "4.0"
+anyio==3.6.2 ; python_version >= "3.10" and python_version < "4.0"
+async-timeout==4.0.2 ; python_version >= "3.10" and python_version < "4.0"
+attrs==23.1.0 ; python_version >= "3.10" and python_version < "4.0"
+certifi==2022.12.7 ; python_version >= "3.10" and python_version < "4.0"
+charset-normalizer==3.1.0 ; python_version >= "3.10" and python_version < "4.0"
+colorama==0.4.6 ; python_version >= "3.10" and python_version < "4.0" and platform_system == "Windows"
+flet-core==0.6.2 ; python_version >= "3.10" and python_version < "4.0"
+flet==0.6.2 ; python_version >= "3.10" and python_version < "4.0"
+frozenlist==1.3.3 ; python_version >= "3.10" and python_version < "4.0"
+h11==0.14.0 ; python_version >= "3.10" and python_version < "4.0"
+httpcore==0.16.3 ; python_version >= "3.10" and python_version < "4.0"
+httpx==0.23.3 ; python_version >= "3.10" and python_version < "4.0"
+idna==3.4 ; python_version >= "3.10" and python_version < "4.0"
+multidict==6.0.4 ; python_version >= "3.10" and python_version < "4.0"
+oauthlib==3.2.2 ; python_version >= "3.10" and python_version < "4.0"
+openai==0.27.5 ; python_version >= "3.10" and python_version < "4.0"
+packaging==23.1 ; python_version >= "3.10" and python_version < "4.0"
+python-dotenv==1.0.0 ; python_version >= "3.10" and python_version < "4.0"
+repath==0.9.0 ; python_version >= "3.10" and python_version < "4.0"
+requests==2.29.0 ; python_version >= "3.10" and python_version < "4.0"
+rfc3986[idna2008]==1.5.0 ; python_version >= "3.10" and python_version < "4.0"
+six==1.16.0 ; python_version >= "3.10" and python_version < "4.0"
+sniffio==1.3.0 ; python_version >= "3.10" and python_version < "4.0"
+tqdm==4.65.0 ; python_version >= "3.10" and python_version < "4.0"
+urllib3==1.26.15 ; python_version >= "3.10" and python_version < "4.0"
+watchdog==2.3.1 ; python_version >= "3.10" and python_version < "4.0"
+websocket-client==1.5.1 ; python_version >= "3.10" and python_version < "4.0"
+websockets==10.4 ; python_version >= "3.10" and python_version < "4.0"
+yarl==1.9.2 ; python_version >= "3.10" and python_version < "4.0"

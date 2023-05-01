@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "doctor-simulator"
+version = "0.2.0"
+description = "基于ChatGPT,内置prompt,用于问诊练习的程序。"
+authors = ["theocheng <zlz_gty@foxmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "doctor_simulator"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flet = "^0.6.2"
+python-dotenv = "^1.0.0"
+openai = "^0.27.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
