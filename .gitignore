@@ -6,3 +6,4 @@ dist
 build
 test.py 
 temp.py
+feedback.log

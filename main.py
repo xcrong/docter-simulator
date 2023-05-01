@@ -24,6 +24,7 @@
 # ////////////////////////////////////////////////////////////////////
 
 import asyncio
+import aiofiles
 import flet as ft
 import webbrowser
 from enum import Enum
@@ -110,6 +111,21 @@ async def main(page: ft.Page):
     #################################################
     # -------------- 可共用控件及函数 --------------- #
     ################################################
+
+    async def get_client_info(e):
+        try:
+            client_ip = page.client_ip
+        except:
+            client_ip = None
+        try:
+            client_user_agent = page.client_user_agent
+        except:
+            client_user_agent = None
+
+        client_platform = page.platform
+
+        return client_ip, client_platform, client_user_agent
+
     async def on_keyboard(e: ft.KeyboardEvent):
         if new_message_textfield.value == "" and e.key == "Tab":
             new_message_textfield.value = "您好，请问您怎么称呼？我是医生"
@@ -246,16 +262,62 @@ async def main(page: ft.Page):
         chat_listview.controls = []
 
         chat_listview.controls.append(statement)
+        chat_listview.controls.append(feedback_card)
 
         chat_listview.auto_scroll = False
         await page.update_async()
         chat_listview.auto_scroll = True
 
+    async def feedback_btn_on_click(e):
+        client_ip, client_platform, client_user_agent = await get_client_info(None)
+        feedback_content = feedback_textfield.value
+        if feedback_content != "":
+            async with aiofiles.open("feedback.log", "a", encoding='utf8') as fi:
+                await fi.write(
+                    f"""
+    Time:{time.ctime()}
+    IP:{client_ip}
+    Platform:{client_platform}
+    User-Agent:{client_user_agent}
+    Feedback:{feedback_content}
+        """
+                )
+            feedback_textfield.value = ""
+            await feedback_card.update_async()
+
+            page.snack_bar = ft.SnackBar(ft.Text("反馈成功，感谢您的宝贵意见~~"))
+            page.snack_bar.open = True
+            await page.update_async()
+
     statement = ft.Card(
         content=ft.ListTile(
             leading=ft.Icon(ft.icons.ALBUM),
-            title=ft.Text("免责声明", color="red"),
+            title=ft.Text("免责声明", color="red", size=18),
             subtitle=ft.Text("本站病人纯属虚构，与现实中的人物无任何联系，请在使用过程中遵守法律法规。"),
+        )
+    )
+
+    feedback_textfield = ft.TextField(
+        label="我觉得网站有可以改进的地方~",
+        multiline=True,
+        max_lines=10,
+        min_lines=5,
+    )
+    feedback_btn = ft.ElevatedButton(
+        icon=ft.icons.SEND_ROUNDED, text="提交反馈", on_click=feedback_btn_on_click
+    )
+
+    feedback_card = ft.Card(
+        content=ft.ListTile(
+            leading=ft.Icon(ft.icons.ALBUM),
+            title=ft.Text("反馈", size=18),
+            subtitle=ft.Column(
+                [
+                    feedback_textfield,
+                    ft.Row([feedback_btn], alignment=ft.MainAxisAlignment.END),
+                ],
+                alignment=ft.CrossAxisAlignment.STRETCH,
+            ),
         )
     )
 
@@ -526,17 +588,8 @@ async def main(page: ft.Page):
     #######################################################
     # ------------- 用于定位错误的统计信息 ----------------- #
     ######################################################
-    try:
-        client_ip = page.client_ip
-    except:
-        client_ip = None
-    try:
-        client_user_agent = page.client_user_agent
-    except:
-        client_user_agent = None
 
-    client_platform = page.platform
-
+    client_ip, client_platform, client_user_agent = await get_client_info(None)
     print(
         f"""
     Time:{time.ctime()}
