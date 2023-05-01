@@ -45,9 +45,12 @@ python main.py
 
 2. 软件最初是从借鉴[官方Demo](https://flet.dev/docs/tutorials/python-realtime-chat)开始的，最然后来对整个软件进行了从同步到异步的改写，然而刀剑不利，斧凿不工，代码中仍有馀迹。
 
-3. 软件布局:总共有四个主要区域,由于开始设计时没有想好，navigation rail 和 app bar （组件名称）都是后来添加，代码布局可能会部分错乱，在下已尽力写好注释。
-![软件截图](/assets/img/1.png)
+3. 软件布局:总共有四个主要区域。~~由于开始设计时没有想好，navigation rail 和 app bar （组件名称）都是后来添加，代码布局可能会部分错乱，在下已尽力写好注释。~~
 
+![软件截图](/assets/img/1.png)
+（桌面端，暗色主题）
+![软件截图](/assets/img/6.png)
+（移动端，亮色主题）
 
 
 
