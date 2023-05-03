@@ -78,6 +78,10 @@ python main.py
 
 3. 软件布局:总共有四个主要区域。~~由于开始设计时没有想好，navigation rail 和 app bar （组件名称）都是后来添加，代码布局可能会部分错乱，在下已尽力写好注释。~~
 
+
+[video1](/assets/video/two-theme.mp4)
+[video2](/assets/video/two-ui.mp4)
+
 <video src="/assets/video/two-ui.mp4" controls class="center"></video>
 
 <video src="/assets/video/two-theme.mp4" controls class="center"></video>
