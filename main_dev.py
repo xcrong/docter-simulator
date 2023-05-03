@@ -366,7 +366,7 @@ async def main(page: ft.Page):
         title=ft.Row(
             [
                 ft.Icon(ft.icons.LOCAL_HOSPITAL_OUTLINED),
-                ft.Text("Doctor Simulator"),
+                ft.Text("Doctor Simulator 🏥",italic=True),
             ]
         ),
         actions=[
