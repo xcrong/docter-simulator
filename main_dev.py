@@ -94,7 +94,7 @@ async def main(page: ft.Page):
     await if_not_set_default("nav_rail_visible", True)
     await if_not_set_default("nav_rail_selected_index", "None")  # 初始界面
     await if_not_set_default("lastest_view", "nav_rail_leading")  # 记住最新加载的界面
-    await if_not_set_default("is_sending",False)
+    await if_not_set_default("is_sending", False)
 
     # 初始根据 destination 的数量初始化聊天记录列表
     # 单条聊天记录格式 ["hello","human"] ["hello, how can i assistant you","bot"]
@@ -279,7 +279,7 @@ async def main(page: ft.Page):
         client_ip, client_platform, client_user_agent = await get_client_info(None)
         feedback_content = feedback_textfield.value
         if feedback_content != "":
-            async with aiofiles.open("feedback.log", "a", encoding='utf8') as fi:
+            async with aiofiles.open("feedback.log", "a", encoding="utf8") as fi:
                 await fi.write(
                     f"""
     Time:{time.ctime()}
@@ -366,7 +366,7 @@ async def main(page: ft.Page):
         title=ft.Row(
             [
                 ft.Icon(ft.icons.LOCAL_HOSPITAL_OUTLINED),
-                ft.Text("Doctor Simulator 🏥",italic=True),
+                ft.Text("Doctor Simulator 🏥", italic=True),
             ]
         ),
         actions=[
@@ -453,11 +453,9 @@ async def main(page: ft.Page):
 
     async def send_message_btn_on_click(e):
         if new_message_textfield.value != "":
-            
             # 发送消息时禁用 nav_rail
             nav_rail.disabled = True
             await nav_rail.update_async()
-
 
             human_message_text = new_message_textfield.value
             page_width = page.width if page.width > 0 else page.window_width
@@ -469,15 +467,16 @@ async def main(page: ft.Page):
             new_message_textfield.value = ""
             await new_message_textfield.update_async()
 
-            await page.client_storage.set_async("is_sending",True)
+            await page.client_storage.set_async("is_sending", True)
 
             await build_message_row(human_message_text, Sender.HUMAN.value, page_width)
 
             history_messages = await get_lastest_n_records(TURNS)
             bot_message_text = await Bot.get_respond(
-                human_message_text, *history_messages, await get_now_nav_rail_selected_index()
+                human_message_text,
+                *history_messages,
+                await get_now_nav_rail_selected_index(),
             )
-
 
             if nav_rail.selected_index == await get_now_nav_rail_selected_index():
                 await build_message_row(
@@ -486,16 +485,22 @@ async def main(page: ft.Page):
 
             # 存储聊天记录
             records = await page.client_storage.get_async("records")
-            records[await get_now_nav_rail_selected_index()] += [[human_message_text, "human"]]
-            records[await get_now_nav_rail_selected_index()] += [[bot_message_text, "bot"]]
+            records[await get_now_nav_rail_selected_index()] += [
+                [human_message_text, "human"]
+            ]
+            records[await get_now_nav_rail_selected_index()] += [
+                [bot_message_text, "bot"]
+            ]
             await page.client_storage.set_async("records", records)
 
             # 发送消息后启用 nav_rail
             nav_rail.disabled = False
             await nav_rail.update_async()
 
-            await page.client_storage.set_async("is_sending",False)
-            await page.client_storage.set_async("nav_rail_selected_index",nav_rail.selected_index)
+            await page.client_storage.set_async("is_sending", False)
+            await page.client_storage.set_async(
+                "nav_rail_selected_index", nav_rail.selected_index
+            )
 
     async def new_message_textfield_on_focus(e):
         if page.width < page.height:
@@ -626,4 +631,6 @@ async def main(page: ft.Page):
     )
 
 
-ft.app(target=main,view=ft.WEB_BROWSER,port=8550,host="0.0.0.0")
+ft.app(
+    target=main, view=ft.WEB_BROWSER, port=8550, host="0.0.0.0", use_color_emoji=True
+)

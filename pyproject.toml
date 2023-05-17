@@ -9,10 +9,10 @@ packages = [{include = "doctor_simulator"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-flet = "^0.6.2"
 python-dotenv = "^1.0.0"
 openai = "^0.27.5"
 aiofiles = "^23.1.0"
+flet = "^0.7.1"
 
 
 [tool.poetry.group.dev.dependencies]
