@@ -632,5 +632,9 @@ async def main(page: ft.Page):
 
 
 ft.app(
-    target=main, view=ft.WEB_BROWSER, port=8550, host="0.0.0.0", use_color_emoji=True
+    target=main,
+    view=ft.WEB_BROWSER,
+    port=8550,
+    host="172.16.201.221",
+    use_color_emoji=True,
 )
