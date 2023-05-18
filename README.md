@@ -2,6 +2,7 @@
 
 ## 〇、最近消息
 
+- 2023/5/18 更新： 使用 [Caddy](https://caddyserver.com/) 对本地服务进行代理，提高响应速度
 - 2023/5/17 更新： 彩色 emoji
 - 2023/5/1 更新： 完全重写代码，代码量精简了三分之一，更加整齐规范可拓展
 
@@ -15,9 +16,11 @@
 
 只有在下知道代码的质量......
 
-## 二、使用
+## 二、配置及启动服务
 
-1. 使用 `poetry`
+- 为例使用 [Caddy](https://caddyserver.com/)，请确保 `Caddy` 在环境变量中，参见[官方文档](https://caddyserver.com/docs/install)
+
+1. 使用 `poetry` 配置
 
 ```
 # 安装 poetry 参见： https://python-poetry.org/
@@ -49,9 +52,12 @@ poetry shell
 # 运行主程序
 python main.py
 
+# 新开一个窗口运行 Caddy， 对服务进行代理
+caddy run
+
 ```
 
-2. 使用 `pip`
+2. 使用 `pip` 配置
 
 ```
 # clone 本项目到本地
@@ -76,6 +82,9 @@ pip install -r requirements.txt
 
 # 启动程序
 python main.py
+
+# 新开一个窗口运行 Caddy， 对服务进行代理
+caddy run
 
 ```
 
